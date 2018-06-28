@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -417,9 +417,9 @@ class CRM_Report_Form_Contribute_SoftCredit extends CRM_Report_Form {
   }
 
   /**
-   * @param array $fields
-   * @param array $files
-   * @param CRM_Core_Form $self
+   * @param $fields
+   * @param $files
+   * @param $self
    *
    * @return array
    */

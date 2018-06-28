@@ -1,4 +1,4 @@
-(function($, _, Backbone) {
+(function($, _) {
   if (!CRM.ProfileSelector) CRM.ProfileSelector = {};
 
   CRM.ProfileSelector.Option = Backbone.Marionette.ItemView.extend({
@@ -185,4 +185,4 @@
       view.render();
     }
   });
-})(CRM.$, CRM._, CRM.BB);
+})(CRM.$, CRM._);

@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -85,10 +85,7 @@ class CRM_Member_Task {
           'result' => FALSE,
         ),
         4 => array(
-          'title' => ts('Email - send now (to %1 or less)', array(
-            1 => Civi::settings()
-              ->get('simple_mail_limit'),
-          )),
+          'title' => ts('Email - send now'),
           'class' => 'CRM_Member_Form_Task_Email',
           'result' => TRUE,
         ),

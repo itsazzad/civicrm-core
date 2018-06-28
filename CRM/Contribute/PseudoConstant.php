@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -132,13 +132,12 @@ class CRM_Contribute_PseudoConstant extends CRM_Core_PseudoConstant {
 
   /**
    * @deprecated. Please use the buildOptions() method in the appropriate BAO object.
-   * TODO: buildOptions() doesn't replace this as it doesn't support filtering, which is used with this function.
    *
-   * Get all/filtered array of the financial Accounts
+   * Get all the financial Accounts
    *
    *
    * @param int $id
-   * @param int $financialAccountTypeId Optional filer to return only financial accounts of type
+   * @param int $financialAccountTypeId
    * @param string $retrieveColumn
    * @param string $key
    *

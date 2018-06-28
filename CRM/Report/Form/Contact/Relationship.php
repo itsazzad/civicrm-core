@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -304,10 +304,6 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'title' => ts('End Date'),
             'type' => CRM_Utils_Type::T_DATE,
           ),
-          'active_period_date' => array(
-            'title' => ts('Active Period'),
-            'type' => CRM_Utils_Type::T_DATE,
-          ),
           'is_permission_a_b' => array(
             'title' => ts('Does contact A have permission over contact B?'),
             'operatorType' => CRM_Report_Form::OP_SELECT,
@@ -334,6 +330,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'start_date' => array(
             'title' => ts('Start Date'),
             'name' => 'start_date',
+          ),
+          'active_period_date' => array(
+            'title' => ts('Active Period'),
+            'type' => CRM_Utils_Type::T_DATE,
           ),
         ),
         'grouping' => 'relation-fields',

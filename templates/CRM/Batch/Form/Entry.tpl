@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -118,12 +118,7 @@
                {/if}
              </div>
           {else}
-            <div class="compressed crm-grid-cell">
-              {$form.field.$rowNumber.$n.html}
-              {if $fields.$n.html_type eq 'File' && !empty($form.field.$rowNumber.$fieldName.value.size)}
-                {ts}Attached{/ts}: {$form.field.$rowNumber.$fieldName.value.name}
-              {/if}
-            </div>
+            <div class="compressed crm-grid-cell">{$form.field.$rowNumber.$n.html}</div>
           {/if}
         {/foreach}
       </div>

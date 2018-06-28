@@ -152,7 +152,6 @@ function _civicrm_api3_report_template_getrows($params) {
   $reportInstance->setOffsetValue($options['offset']);
   $reportInstance->beginPostProcessCommon();
   $sql = $reportInstance->buildQuery();
-  $reportInstance->addToDeveloperTab($sql);
   $rows = $metadata = $requiredMetadata  = array();
   $reportInstance->buildRows($sql, $rows);
   $reportInstance->formatDisplay($rows);

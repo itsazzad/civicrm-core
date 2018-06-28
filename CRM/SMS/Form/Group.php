@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -46,10 +46,6 @@ class CRM_SMS_Form_Group extends CRM_Contact_Form_Task {
 
     $session = CRM_Core_Session::singleton();
     $session->replaceUserContext(CRM_Utils_System::url('civicrm/mailing/browse', 'reset=1&sms=1'));
-
-    if (CRM_Core_Permission::check('administer CiviCRM')) {
-      $this->assign('isAdmin', 1);
-    }
   }
 
   /**
@@ -108,12 +104,6 @@ class CRM_SMS_Form_Group extends CRM_Contact_Form_Task {
 
     $this->add('text', 'name', ts('Name Your SMS'),
       CRM_Core_DAO::getAttribute('CRM_Mailing_DAO_Mailing', 'name'),
-      TRUE
-    );
-
-    $this->add('select', 'sms_provider_id',
-      ts('Select SMS Provider'),
-      CRM_Utils_Array::collect('title', CRM_SMS_BAO_Provider::getProviders()),
       TRUE
     );
 
@@ -193,14 +183,9 @@ class CRM_SMS_Form_Group extends CRM_Contact_Form_Task {
       'name',
       'group_id',
       'is_sms',
-      'sms_provider_id',
     ) as $n) {
       if (!empty($values[$n])) {
         $params[$n] = $values[$n];
-        if ($n == 'sms_provider_id') {
-          // Get the from Name.
-          $params['from_name'] = CRM_Core_DAO::getFieldValue('CRM_SMS_DAO_Provider', $params['sms_provider_id'], 'username');
-        }
       }
     }
 
@@ -281,7 +266,12 @@ class CRM_SMS_Form_Group extends CRM_Contact_Form_Task {
     $this->set('mailing_id', $mailing->id);
 
     // also compute the recipients and store them in the mailing recipients table
-    CRM_Mailing_BAO_Mailing::getRecipients($mailing->id);
+    CRM_Mailing_BAO_Mailing::getRecipients($mailing->id,
+      $mailing->id,
+      TRUE,
+      FALSE,
+      'sms'
+    );
 
     $count = CRM_Mailing_BAO_Recipients::mailingSize($mailing->id);
     $this->set('count', $count);

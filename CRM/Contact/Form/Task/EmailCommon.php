@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -44,16 +44,21 @@ class CRM_Contact_Form_Task_EmailCommon {
   public $_toContactEmails = array();
 
   /**
-   * @deprecated Generate an array of Domain email addresses.
+   * Generate an array of Domain email addresses.
    * @return array $domainEmails;
    */
   public static function domainEmails() {
-    Civi::log()->warning('Deprecated function, use CRM_Core_BAO_Email::domainEmails()', array('civi.tag' => 'deprecated'));
-    return CRM_Core_BAO_Email::domainEmails();
+    $domainEmails = array();
+    $domainFrom = CRM_Core_OptionGroup::values('from_email_address');
+    foreach (array_keys($domainFrom) as $k) {
+      $domainEmail = $domainFrom[$k];
+      $domainEmails[$domainEmail] = htmlspecialchars($domainEmail);
+    }
+    return $domainEmails;
   }
 
   /**
-   * Pre Process Form Addresses to be used in Quickform
+   * Pre Process Form Addresses to be used in QUickfomr
    * @param CRM_Core_Form $form
    * @param bool $bounce determine if we want to throw a status bounce.
    */
@@ -67,27 +72,60 @@ class CRM_Contact_Form_Task_EmailCommon {
       $form->_single = TRUE;
     }
 
-    $form->_emails = array();
+    $form->_emails = $emails = array();
 
     $contactID = CRM_Core_Session::singleton()->getLoggedInContactID();
+    $fromDisplayName  = CRM_Core_Session::singleton()->getLoggedInContactDisplayName();
+
     $form->_contactIds = array($contactID);
+    $contactEmails = CRM_Core_BAO_Email::allEmails($contactID);
 
-    $fromEmailValues = CRM_Core_BAO_Email::getFromEmail();
+    $form->_onHold = array();
 
-    $form->_noEmails = FALSE;
-    if (empty($fromEmailValues)) {
-      $form->_noEmails = TRUE;
+    foreach ($contactEmails as $emailId => $item) {
+      $email = $item['email'];
+      if (!$email && (count($emails) < 1)) {
+        // set it if no emails are present at all
+        $form->_noEmails = TRUE;
+      }
+      else {
+        if ($email) {
+          if (in_array($email, $emails)) {
+            // CRM-3624
+            continue;
+          }
+
+          $emails[$emailId] = '"' . $fromDisplayName . '" <' . $email . '> ';
+          $form->_onHold[$emailId] = $item['on_hold'];
+          $form->_noEmails = FALSE;
+        }
+      }
+      if (!empty($email)) {
+        $form->_emails[$emailId] = $emails[$emailId];
+        $emails[$emailId] .= $item['locationType'];
+
+        if ($item['is_primary']) {
+          $emails[$emailId] .= ' ' . ts('(preferred)');
+        }
+        $emails[$emailId] = htmlspecialchars($emails[$emailId]);
+      }
     }
+
     $form->assign('noEmails', $form->_noEmails);
 
     if ($bounce) {
       if ($form->_noEmails) {
-        CRM_Core_Error::statusBounce(ts('Your user record does not have a valid email address and no from addresses have been configured.'));
+        CRM_Core_Error::statusBounce(ts('Your user record does not have a valid email address'));
       }
     }
 
-    $form->_emails = $fromEmailValues;
-    $form->_fromEmails = $fromEmailValues;
+    // now add domain from addresses
+    $domainEmails = self::domainEmails();
+    foreach ($domainEmails as $domainEmail => $email) {
+      $form->_emails[$domainEmail] = $domainEmail;
+    }
+    $form->_fromEmails = CRM_Utils_Array::crmArrayMerge($emails, $domainEmails);
+    $form->_fromEmails = array_filter($form->_fromEmails);
     if (is_numeric(key($form->_fromEmails))) {
       // Add signature
       $defaultEmail = civicrm_api3('email', 'getsingle', array('id' => key($form->_fromEmails)));
@@ -249,7 +287,7 @@ class CRM_Contact_Form_Task_EmailCommon {
 
     $form->add('text', 'subject', ts('Subject'), 'size=50 maxlength=254', TRUE);
 
-    $form->add('select', 'from_email_address', ts('From'), $form->_fromEmails, TRUE);
+    $form->add('select', 'fromEmailAddress', ts('From'), $form->_fromEmails, TRUE, array('class' => 'crm-select2 huge'));
 
     CRM_Mailing_BAO_Mailing::commonCompose($form);
 
@@ -389,7 +427,7 @@ class CRM_Contact_Form_Task_EmailCommon {
   public static function submit(&$form, $formValues) {
     self::saveMessageTemplate($formValues);
 
-    $from = CRM_Utils_Array::value('from_email_address', $formValues);
+    $from = CRM_Utils_Array::value($formValues['fromEmailAddress'], $form->_emails);
     $subject = $formValues['subject'];
 
     // CRM-13378: Append CC and BCC information at the end of Activity Details and format cc and bcc fields

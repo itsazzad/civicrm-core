@@ -3,7 +3,7 @@
   +--------------------------------------------------------------------+
   | CiviCRM version 4.7                                                |
   +--------------------------------------------------------------------+
-  | Copyright CiviCRM LLC (c) 2004-2018                                |
+  | Copyright CiviCRM LLC (c) 2004-2017                                |
   +--------------------------------------------------------------------+
   | This file is a part of CiviCRM.                                    |
   |                                                                    |
@@ -866,7 +866,7 @@ class CRM_Report_Form extends CRM_Core_Form {
       if (array_key_exists('fields', $table)) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (empty($field['no_display'])) {
-            if (!empty($field['required'])) {
+            if (isset($field['required'])) {
               // set default
               $this->_defaults['fields'][$fieldName] = 1;
 
@@ -1313,7 +1313,7 @@ class CRM_Report_Form extends CRM_Core_Form {
    *
    * @param string $sql
    */
-  public function addToDeveloperTab($sql) {
+  protected function addToDeveloperTab($sql) {
     if (!CRM_Core_Permission::check('view report sql')) {
       return;
     }

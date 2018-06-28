@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -363,11 +363,6 @@ WHERE  contribution_id = {$id}
     }
     elseif (empty($this->_paymentProcessors) || array_keys($this->_paymentProcessors) === array(0)) {
       throw new CRM_Core_Exception(ts('You will need to configure the %1 settings for your Payment Processor before you can submit a credit card transactions.', array(1 => $this->_mode)));
-    }
-    //Assign submitted processor value if it is different from the loaded one.
-    if (!empty($this->_submitValues['payment_processor_id'])
-      && $this->_paymentProcessor['id'] != $this->_submitValues['payment_processor_id']) {
-      $this->_paymentProcessor = CRM_Financial_BAO_PaymentProcessor::getPayment($this->_submitValues['payment_processor_id']);
     }
     $this->_processors = array();
     foreach ($this->_paymentProcessors as $id => $processor) {

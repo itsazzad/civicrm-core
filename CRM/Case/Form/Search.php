@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -174,13 +174,15 @@ class CRM_Case_Form_Search extends CRM_Core_Form_Search {
         $this->addRowSelectors($rows);
       }
 
-      $tasks = CRM_Case_Task::permissionedTaskTitles(CRM_Core_Permission::getPermission());
+      $permission = CRM_Core_Permission::getPermission();
+
+      $tasks = CRM_Case_Task::permissionedTaskTitles($permission);
 
       if (!empty($this->_formValues['case_deleted'])) {
-        unset($tasks[CRM_Case_Task::DELETE]);
+        unset($tasks[1]);
       }
       else {
-        unset($tasks[CRM_Case_Task::RESTORE_CASES]);
+        unset($tasks[4]);
       }
 
       $this->addTaskMenu($tasks);

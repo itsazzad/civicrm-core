@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -31,7 +31,12 @@
   <div class="crm-accordion-body">
   {strip}
        <table class="form-layout">
-          {include file="CRM/Contact/Form/Search/ContactSearchFields.tpl"}
+          <tr>
+              <td class="font-size12pt" colspan="2">
+                  {$form.sort_name.label}&nbsp;&nbsp;{$form.sort_name.html|crmAddClass:'twenty'}&nbsp;&nbsp;&nbsp;{$form.buttons.html}
+              </td>
+          </tr>
+
           {include file="CRM/Member/Form/Search/Common.tpl"}
 
           <tr>

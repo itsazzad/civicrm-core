@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -88,11 +88,8 @@ class CRM_Event_Form_Task extends CRM_Core_Form {
     $values = $form->controller->exportValues($form->get('searchFormName'));
 
     $form->_task = $values['task'];
-    $tasks = CRM_Event_Task::permissionedTaskTitles(CRM_Core_Permission::getPermission());
-    if (!array_key_exists($form->_task, $tasks)) {
-      CRM_Core_Error::statusBounce(ts('You do not have permission to access this page.'));
-    }
-    $form->assign('taskName', $tasks[$form->_task]);
+    $eventTasks = CRM_Event_Task::tasks();
+    $form->assign('taskName', $eventTasks[$form->_task]);
 
     $ids = array();
     if ($values['radio_ts'] == 'ts_sel') {

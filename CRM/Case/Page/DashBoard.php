@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -58,7 +58,7 @@ class CRM_Case_Page_DashBoard extends CRM_Core_Page {
     }
 
     $session = CRM_Core_Session::singleton();
-    $allCases = CRM_Utils_Request::retrieve('all', 'Positive', $this);
+    $allCases = CRM_Utils_Request::retrieve('all', 'Positive', $session);
 
     CRM_Utils_System::setTitle(ts('CiviCase Dashboard'));
 
@@ -66,10 +66,9 @@ class CRM_Case_Page_DashBoard extends CRM_Core_Page {
 
     //validate access for all cases.
     if ($allCases && !CRM_Core_Permission::check('access all cases and activities')) {
-      $allCases = 0;
+      $allCases = FALSE;
       CRM_Core_Session::setStatus(ts('You are not authorized to access all cases and activities.'), ts('Sorry'), 'error');
     }
-    $this->assign('all', $allCases);
     if (!$allCases) {
       $this->assign('myCases', TRUE);
     }
@@ -83,27 +82,22 @@ class CRM_Case_Page_DashBoard extends CRM_Core_Page {
     ) {
       $this->assign('newClient', TRUE);
     }
-    $summary = CRM_Case_BAO_Case::getCasesSummary($allCases);
-    $upcoming = CRM_Case_BAO_Case::getCases($allCases, array(), 'dashboard', TRUE);
-    $recent = CRM_Case_BAO_Case::getCases($allCases, array('type' => 'recent'), 'dashboard', TRUE);
+    $summary = CRM_Case_BAO_Case::getCasesSummary($allCases, $userID);
+    $upcoming = CRM_Case_BAO_Case::getCases($allCases, $userID, 'upcoming');
+    $recent = CRM_Case_BAO_Case::getCases($allCases, $userID, 'recent');
 
+    foreach ($upcoming as $key => $value) {
+      if (strtotime($value['case_scheduled_activity_date']) < time()) {
+        $upcoming[$key]['activity_status'] = 'status-overdue';
+      }
+    }
     $this->assign('casesSummary', $summary);
     if (!empty($upcoming)) {
-      $this->assign('upcomingCases', TRUE);
+      $this->assign('upcomingCases', $upcoming);
     }
     if (!empty($recent)) {
-      $this->assign('recentCases', TRUE);
+      $this->assign('recentCases', $recent);
     }
-
-    $controller = new CRM_Core_Controller_Simple('CRM_Case_Form_Search',
-      ts('Case'), CRM_Core_Action::BROWSE,
-      NULL,
-      FALSE, FALSE, TRUE
-    );
-    $controller->set('context', 'dashboard');
-    $controller->setEmbedded(TRUE);
-    $controller->process();
-    $controller->run();
   }
 
   /**

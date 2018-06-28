@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -853,12 +853,10 @@ AND    u.status = 1
    * Similar to drupal_exit().
    */
   public function onCiviExit() {
-    if (function_exists('module_invoke_all')) {
-      if (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update') {
-        module_invoke_all('exit');
-      }
-      drupal_session_commit();
+    if (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update') {
+      module_invoke_all('exit');
     }
+    drupal_session_commit();
   }
 
 }

@@ -88,7 +88,8 @@ class CRM_Custom_Import_Form_MapField extends CRM_Contact_Import_Form_MapField {
         $errors['saveMappingName'] = ts('Name is required to save Import Mapping');
       }
       else {
-        if (CRM_Core_BAO_Mapping::checkMapping($nameField, CRM_Core_PseudoConstant::getKey('CRM_Core_BAO_Mapping', 'mapping_type_id', 'Import Multi value custom data'))) {
+        $mappingTypeId = CRM_Core_OptionGroup::getValue('mapping_type', 'Import Multi value custom data', 'name');
+        if (CRM_Core_BAO_Mapping::checkMapping($nameField, $mappingTypeId)) {
           $errors['saveMappingName'] = ts('Duplicate ' . $self->_mappingType . 'Mapping Name');
         }
       }
@@ -186,7 +187,10 @@ class CRM_Custom_Import_Form_MapField extends CRM_Contact_Import_Form_MapField {
       $mappingParams = array(
         'name' => $params['saveMappingName'],
         'description' => $params['saveMappingDesc'],
-        'mapping_type_id' => CRM_Core_PseudoConstant::getKey('CRM_Core_BAO_Mapping', 'mapping_type_id', $this->_mappingType),
+        'mapping_type_id' => CRM_Core_OptionGroup::getValue('mapping_type',
+          $this->_mappingType,
+          'name'
+        ),
       );
       $saveMapping = CRM_Core_BAO_Mapping::add($mappingParams);
 

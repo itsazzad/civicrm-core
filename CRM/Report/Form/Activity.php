@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 class CRM_Report_Form_Activity extends CRM_Report_Form {
   protected $_selectAliasesTotal = array();
@@ -396,7 +396,7 @@ class CRM_Report_Form_Activity extends CRM_Report_Form {
    *
    * @param null $recordType
    */
-  public function select($recordType = 'target') {
+  public function select($recordType = NULL) {
     if (!array_key_exists("contact_{$recordType}", $this->_params['fields']) &&
       $recordType != 'final'
     ) {
@@ -499,7 +499,7 @@ class CRM_Report_Form_Activity extends CRM_Report_Form {
    *
    * @param string $recordType
    */
-  public function from($recordType = 'target') {
+  public function from($recordType) {
     $activityContacts = CRM_Activity_BAO_ActivityContact::buildOptions('record_type_id', 'validate');
     $activityTypeId = CRM_Core_DAO::getFieldValue("CRM_Core_DAO_OptionGroup", 'activity_type', 'id', 'name');
     $assigneeID = CRM_Utils_Array::key('Activity Assignees', $activityContacts);
@@ -781,12 +781,12 @@ GROUP BY civicrm_activity_id $having {$this->_orderBy}";
     return $errors;
   }
 
-  /**
-   * @param $applyLimit
-   *
-   * @return string
-   */
-  public function buildQuery($applyLimit = TRUE) {
+  public function postProcess() {
+    //reset value of activity_date
+    if (!empty($this->_resetDateFilter)) {
+      $this->_formValues["activity_date_time_relative"] = NULL;
+    }
+    $this->beginPostProcess();
     $activityContacts = CRM_Activity_BAO_ActivityContact::buildOptions('record_type_id', 'validate');
     $sourceID = CRM_Utils_Array::key('Activity Source', $activityContacts);
 
@@ -868,11 +868,7 @@ GROUP BY civicrm_activity_id $having {$this->_orderBy}";
         $this->alterSectionHeaderForDateTime('civireport_activity_temp_target', $section['tplField']);
       }
     }
-
-    if ($applyLimit) {
-      $this->limit();
-    }
-
+    $this->limit();
     $groupByFromSelect = CRM_Contact_BAO_Query::getGroupByFromSelectColumns($this->_selectClauses, 'civicrm_activity_id');
 
     $this->_where = " WHERE (1)";
@@ -889,20 +885,7 @@ GROUP BY civicrm_activity_id $having {$this->_orderBy}";
       LEFT JOIN civicrm_contact contact_civireport ON contact_civireport.id = {$this->_aliases['civicrm_activity_contact']}.contact_id
       {$this->_where} {$groupByFromSelect} {$this->_having} {$this->_orderBy} {$this->_limit}";
 
-    CRM_Utils_Hook::alterReportVar('sql', $this, $this);
     $this->addToDeveloperTab($sql);
-
-    return $sql;
-  }
-
-  public function postProcess() {
-    //reset value of activity_date
-    if (!empty($this->_resetDateFilter)) {
-      $this->_formValues["activity_date_time_relative"] = NULL;
-    }
-
-    $this->beginPostProcess();
-    $sql = $this->buildQuery(TRUE);
     $this->buildRows($sql, $rows);
 
     // format result set.
