@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  *
  */
 
@@ -388,7 +388,6 @@ class CRM_Contact_Page_AJAX {
       }
 
       if ($queryString) {
-        $result = array();
         $offset = CRM_Utils_Array::value('offset', $_GET, 0);
         $rowCount = Civi::settings()->get('search_autocomplete_count');
 
@@ -451,7 +450,9 @@ LIMIT {$offset}, {$rowCount}
             );
           }
         }
-        CRM_Utils_JSON::output($result);
+        if ($result) {
+          CRM_Utils_JSON::output($result);
+        }
       }
     }
     CRM_Utils_System::civiExit();
@@ -482,7 +483,6 @@ LIMIT {$offset}, {$rowCount}
     }
 
     if ($queryString) {
-      $result = array();
       $offset = CRM_Utils_Array::value('offset', $_GET, 0);
       $rowCount = CRM_Utils_Array::value('rowcount', $_GET, 20);
 
@@ -519,6 +519,9 @@ LIMIT {$offset}, {$rowCount}
           'id' => (CRM_Utils_Array::value('id', $_GET)) ? "{$dao->id}::{$dao->phone}" : '"' . $dao->name . '" <' . $dao->phone . '>',
         );
       }
+    }
+
+    if ($result) {
       CRM_Utils_JSON::output($result);
     }
     CRM_Utils_System::civiExit();
@@ -808,16 +811,9 @@ LIMIT {$offset}, {$rowCount}
       $searchRows[$count]['weight'] = CRM_Utils_Array::value('weight', $pair);
 
       if (!empty($pairInfo['data']['canMerge'])) {
-        $mergeParams = [
-          'reset' => 1,
-            'cid' => $pairInfo['entity_id1'],
-            'oid' => $pairInfo['entity_id2'],
-            'action' => 'update',
-            'rgid' => $rgid,
-            'limit' => CRM_Utils_Request::retrieve('limit', 'Integer'),
-          ];
+        $mergeParams = "reset=1&cid={$pairInfo['entity_id1']}&oid={$pairInfo['entity_id2']}&action=update&rgid={$rgid}&limit=" . CRM_Utils_Request::retrieve('limit', 'Integer');
         if ($gid) {
-          $mergeParams['gid'] = $gid;
+          $mergeParams .= "&gid={$gid}";
         }
 
         $searchRows[$count]['actions']  = "<a class='crm-dedupe-flip' href='#' data-pnid={$pairInfo['prevnext_id']}>" . ts('flip') . "</a>&nbsp;|&nbsp;";

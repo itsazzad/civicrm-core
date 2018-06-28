@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -276,20 +276,6 @@ AND    reset_date IS NULL
   }
 
   /**
-   * Generate an array of Domain email addresses.
-   * @return array $domainEmails;
-   */
-  public static function domainEmails() {
-    $domainEmails = array();
-    $domainFrom = (array) CRM_Core_OptionGroup::values('from_email_address');
-    foreach (array_keys($domainFrom) as $k) {
-      $domainEmail = $domainFrom[$k];
-      $domainEmails[$domainEmail] = htmlspecialchars($domainEmail);
-    }
-    return $domainEmails;
-  }
-
-  /**
    * Build From Email as the combination of all the email ids of the logged in user and
    * the domain email id
    *
@@ -297,20 +283,22 @@ AND    reset_date IS NULL
    *   an array of email ids
    */
   public static function getFromEmail() {
-    // add all configured FROM email addresses
-    $fromEmailValues = self::domainEmails();
+    $contactID = CRM_Core_Session::singleton()->getLoggedInContactID();
+    $fromEmailValues = array();
 
-    if (!Civi::settings()->get('allow_mail_from_logged_in_contact')) {
-      return $fromEmailValues;
+    // add all configured FROM email addresses
+    $domainFrom = CRM_Core_OptionGroup::values('from_email_address');
+    foreach (array_keys($domainFrom) as $k) {
+      $domainEmail = $domainFrom[$k];
+      $fromEmailValues[$domainEmail] = htmlspecialchars($domainEmail);
     }
 
     // add logged in user's active email ids
-    $contactID = CRM_Core_Session::singleton()->getLoggedInContactID();
     if ($contactID) {
       $contactEmails = self::allEmails($contactID);
-      $fromDisplayName  = CRM_Core_Session::singleton()->getLoggedInContactDisplayName();
+      $fromDisplayName = CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Contact', $contactID, 'display_name');
 
-      foreach ($contactEmails as $emailId => $emailVal) {
+      foreach ($contactEmails as $emailVal) {
         $email = trim($emailVal['email']);
         if (!$email || $emailVal['on_hold']) {
           continue;
@@ -321,7 +309,7 @@ AND    reset_date IS NULL
         if (!empty($emailVal['is_primary'])) {
           $fromEmailHtml .= ' ' . ts('(preferred)');
         }
-        $fromEmailValues[$emailId] = $fromEmailHtml;
+        $fromEmailValues[$fromEmail] = $fromEmailHtml;
       }
     }
     return $fromEmailValues;

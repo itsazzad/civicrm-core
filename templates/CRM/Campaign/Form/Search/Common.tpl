@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -30,8 +30,9 @@
 {if $searchVoterFor}
   {assign var='searchForm' value="search_form_$searchVoterFor"}
 {/if}
+
   <div id="{$searchForm}" class="crm-accordion-wrapper crm-contribution_search_form-accordion {if $rows}collapsed{/if}">
-    <div class="crm-accordion-header {if !$votingTab} crm-master-accordion-header{/if}">
+    <div class="crm-accordion-header crm-master-accordion-header">
     {ts}Edit Search Criteria{/ts}
     </div><!-- /.crm-accordion-header -->
 
@@ -60,25 +61,16 @@
           <td class="font-size12pt">
             {$form.sort_name.label}
           </td>
-          <td colspan="3">
+          <td>
             {$form.sort_name.html|crmAddClass:'twenty'}
           </td>
-        </tr>
-        <tr>
-          <td>
-            <label>{ts}Contact Type(s){/ts}</label>
-          </td>
-          <td>
+          <td><label>{ts}Contact Type(s){/ts}</label><br />
             {$form.contact_type.html}
           </td>
-          <td>
-            <label>{ts}Group(s){/ts}</label>
-          </td>
-          <td >
+          <td><label>{ts}Group(s){/ts}</label>
             {$form.group.html}
           </td>
         </tr>
-
         <tr>
           <td class="font-size12pt">
             {$form.street_address.label}

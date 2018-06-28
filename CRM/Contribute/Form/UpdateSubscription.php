@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -27,7 +27,7 @@
 
 /**
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -107,17 +107,7 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
     }
 
     if ($this->_subscriptionDetails->membership_id && $this->_subscriptionDetails->auto_renew) {
-      // Add Membership details to form
-      $membership = civicrm_api3('Membership', 'get', array(
-        'contribution_recur_id' => $this->contributionRecurID,
-      ));
-      if (!empty($membership['count'])) {
-        $membershipDetails = reset($membership['values']);
-        $values['membership_id'] = $membershipDetails['id'];
-        $values['membership_name'] = $membershipDetails['membership_name'];
-      }
-      $this->assign('recurMembership', $values);
-      $this->assign('contactId', $this->_subscriptionDetails->contact_id);
+      CRM_Core_Error::statusBounce(ts('You cannot update the subscription.'));
     }
 
     if (!CRM_Core_Permission::check('edit contributions')) {

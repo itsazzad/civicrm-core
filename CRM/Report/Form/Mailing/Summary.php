@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 class CRM_Report_Form_Mailing_Summary extends CRM_Report_Form {
 
@@ -85,12 +85,12 @@ class CRM_Report_Form_Mailing_Summary extends CRM_Report_Form {
           //'operator' => 'like',
           'default' => 1,
         ),
-        'mailing_id' => array(
-          'name' => 'id',
+        'mailing_name' => array(
+          'name' => 'name',
           'title' => ts('Mailing Name'),
           'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-          'type' => CRM_Utils_Type::T_INT,
-          'options' => CRM_Mailing_BAO_Mailing::getMailingsList(),
+          'type' => CRM_Utils_Type::T_STRING,
+          'options' => self::mailing_select(),
           'operator' => 'like',
         ),
         'mailing_subject' => array(
@@ -315,6 +315,24 @@ class CRM_Report_Form_Mailing_Summary extends CRM_Report_Form {
       );
     }
     parent::__construct();
+  }
+
+  /**
+   * @return array
+   */
+  public function mailing_select() {
+
+    $data = array();
+
+    $mailing = new CRM_Mailing_BAO_Mailing();
+    $query = "SELECT name FROM civicrm_mailing WHERE sms_provider_id IS NULL";
+    $mailing->query($query);
+
+    while ($mailing->fetch()) {
+      $data[CRM_Core_DAO::escapeString($mailing->name)] = $mailing->name;
+    }
+
+    return $data;
   }
 
   public function preProcess() {

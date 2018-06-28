@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -158,7 +158,10 @@ class CRM_Contact_Form_Task_SaveSearch extends CRM_Contact_Form_Task {
       if (!$this->_id) {
         //save record in mapping table
         $mappingParams = array(
-          'mapping_type_id' => CRM_Core_PseudoConstant::getKey('CRM_Core_BAO_Mapping', 'mapping_type_id', 'Search Builder'),
+          'mapping_type_id' => CRM_Core_OptionGroup::getValue('mapping_type',
+            'Search Builder',
+            'name'
+          ),
         );
         $mapping = CRM_Core_BAO_Mapping::add($mappingParams);
         $mappingId = $mapping->id;
@@ -237,7 +240,10 @@ class CRM_Contact_Form_Task_SaveSearch extends CRM_Contact_Form_Task {
         'id' => $mappingId,
         'name' => CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Group', $group->id, 'name', 'id'),
         'description' => CRM_Core_DAO::getFieldValue('CRM_Contact_DAO_Group', $group->id, 'description', 'id'),
-        'mapping_type_id' => CRM_Core_PseudoConstant::getKey('CRM_Core_BAO_Mapping', 'mapping_type_id', 'Search Builder'),
+        'mapping_type_id' => CRM_Core_OptionGroup::getValue('mapping_type',
+          'Search Builder',
+          'name'
+        ),
       );
       CRM_Core_BAO_Mapping::add($mappingParams);
     }

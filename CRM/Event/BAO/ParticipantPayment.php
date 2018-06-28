@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -29,7 +29,7 @@
  *
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -41,15 +41,14 @@ class CRM_Event_BAO_ParticipantPayment extends CRM_Event_DAO_ParticipantPayment 
    * @param array $params
    *   of values to initialize the record with.
    * @param array $ids
-   *   deprecated array.
+   *   with one values of id for this participantPayment record (for update).
    *
    * @return object
    *   the partcipant payment record
    */
-  public static function create(&$params, $ids = []) {
-    $id = CRM_Utils_Array::value('id', $params, CRM_Utils_Array::value('id', $ids));
-    if ($id) {
-      CRM_Utils_Hook::pre('edit', 'ParticipantPayment', $id, $params);
+  public static function create(&$params, &$ids) {
+    if (isset($ids['id'])) {
+      CRM_Utils_Hook::pre('edit', 'ParticipantPayment', $ids['id'], $params);
     }
     else {
       CRM_Utils_Hook::pre('create', 'ParticipantPayment', NULL, $params);
@@ -57,21 +56,16 @@ class CRM_Event_BAO_ParticipantPayment extends CRM_Event_DAO_ParticipantPayment 
 
     $participantPayment = new CRM_Event_BAO_ParticipantPayment();
     $participantPayment->copyValues($params);
-    if ($id) {
-      $participantPayment->id = $id;
+    if (isset($ids['id'])) {
+      $participantPayment->id = CRM_Utils_Array::value('id', $ids);
     }
     else {
       $participantPayment->find(TRUE);
     }
     $participantPayment->save();
 
-    if (empty($participantPayment->contribution_id)) {
-      // For an id update contribution_id may be unknown. We want it
-      // further down so perhaps get it before the hooks.
-      $participantPayment->find(TRUE);
-    }
-    if ($id) {
-      CRM_Utils_Hook::post('edit', 'ParticipantPayment', $id, $participantPayment);
+    if (isset($ids['id'])) {
+      CRM_Utils_Hook::post('edit', 'ParticipantPayment', $ids['id'], $participantPayment);
     }
     else {
       CRM_Utils_Hook::post('create', 'ParticipantPayment', NULL, $participantPayment);

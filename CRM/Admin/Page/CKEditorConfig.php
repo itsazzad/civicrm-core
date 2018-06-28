@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -132,13 +132,7 @@ class CRM_Admin_Page_CKEditorConfig extends CRM_Core_Page {
       $val = trim($val);
       if (strpos($key, 'config_') === 0 && strlen($val)) {
         if ($val != 'true' && $val != 'false' && $val != 'null' && $val[0] != '{' && $val[0] != '[' && !is_numeric($val)) {
-          $val = json_encode($val, JSON_UNESCAPED_SLASHES);
-        }
-        elseif ($val[0] == '{' || $val[0] == '[') {
-          if (!is_array(json_decode($val, TRUE))) {
-            // Invalid JSON. Do not save.
-            continue;
-          }
+          $val = json_encode($val);
         }
         $pos = strrpos($config, '};');
         $key = preg_replace('/^config_/', 'config.', $key);

@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -158,7 +158,7 @@
       </td>
       {else}
       <td class="view-value">
-       {$form.details.html|crmStripAlternatives|nl2br}
+       {$form.details.html|crmStripAlternatives}
       </td>
     {/if}
   </tr>

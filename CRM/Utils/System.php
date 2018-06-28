@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -1074,12 +1074,25 @@ class CRM_Utils_System {
 
     if (!$version) {
       $verFile = implode(DIRECTORY_SEPARATOR,
-        array(dirname(__FILE__), '..', '..', 'xml', 'version.xml')
+        array(dirname(__FILE__), '..', '..', 'civicrm-version.php')
       );
       if (file_exists($verFile)) {
-        $str = file_get_contents($verFile);
-        $xmlObj = simplexml_load_string($str);
-        $version = (string) $xmlObj->version_no;
+        require_once $verFile;
+        if (function_exists('civicrmVersion')) {
+          $info = civicrmVersion();
+          $version = $info['version'];
+        }
+      }
+      else {
+        // svn installs don't have version.txt by default. In that case version.xml should help -
+        $verFile = implode(DIRECTORY_SEPARATOR,
+          array(dirname(__FILE__), '..', '..', 'xml', 'version.xml')
+        );
+        if (file_exists($verFile)) {
+          $str = file_get_contents($verFile);
+          $xmlObj = simplexml_load_string($str);
+          $version = (string) $xmlObj->version_no;
+        }
       }
 
       // pattern check

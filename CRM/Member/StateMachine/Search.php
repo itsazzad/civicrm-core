@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -80,7 +80,7 @@ class CRM_Member_StateMachine_Search extends CRM_Core_StateMachine {
    *
    * @param string $formName
    *
-   * @return array
+   * @return string
    *   the name of the form that will handle the task
    */
   public function taskName($controller, $formName = 'Search') {

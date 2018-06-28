@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 class CRM_SMS_BAO_Provider extends CRM_SMS_DAO_Provider {
 
@@ -83,7 +83,7 @@ class CRM_SMS_BAO_Provider extends CRM_SMS_DAO_Provider {
     $dao->find();
     while ($dao->fetch()) {
       CRM_Core_DAO::storeValues($dao, $temp);
-      $providers[$dao->id] = $temp;
+      $providers[] = $temp;
     }
     return $providers;
   }

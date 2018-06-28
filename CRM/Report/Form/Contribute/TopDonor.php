@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,9 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
+ * $Id$
+ *
  */
 class CRM_Report_Form_Contribute_TopDonor extends CRM_Report_Form {
 
@@ -212,13 +214,60 @@ class CRM_Report_Form_Contribute_TopDonor extends CRM_Report_Form {
     parent::preProcess();
   }
 
-  /**
-   * Select only contact ID when adding to group.
-   *
-   * @todo consider moving that to parent to support AddToGroup in general.
-   */
   public function select() {
-    parent::select();
+    $select = array();
+    $this->_columnHeaders = array();
+    //Headers for Rank column
+    $this->_columnHeaders["civicrm_donor_rank"]['title'] = ts('Rank');
+    $this->_columnHeaders["civicrm_donor_rank"]['type'] = 1;
+    //$select[] ="(@rank:=@rank+1)  as civicrm_donor_rank ";
+
+    foreach ($this->_columns as $tableName => $table) {
+      if (array_key_exists('fields', $table)) {
+        foreach ($table['fields'] as $fieldName => $field) {
+          if (!empty($field['required']) ||
+            !empty($this->_params['fields'][$fieldName])
+          ) {
+            // only include statistics columns if set
+            if (!empty($field['statistics'])) {
+              foreach ($field['statistics'] as $stat => $label) {
+                switch (strtolower($stat)) {
+                  case 'sum':
+                    $select[] = "SUM({$field['dbAlias']}) as {$tableName}_{$fieldName}_{$stat}";
+                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
+                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
+                    $this->_statFields[] = "{$tableName}_{$fieldName}_{$stat}";
+                    break;
+
+                  case 'count':
+                    $select[] = "COUNT({$field['dbAlias']}) as {$tableName}_{$fieldName}_{$stat}";
+                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
+                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = CRM_Utils_Type::T_INT;
+                    $this->_statFields[] = "{$tableName}_{$fieldName}_{$stat}";
+                    break;
+
+                  case 'avg':
+                    $select[] = "ROUND(AVG({$field['dbAlias']}),2) as {$tableName}_{$fieldName}_{$stat}";
+                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['type'] = $field['type'];
+                    $this->_columnHeaders["{$tableName}_{$fieldName}_{$stat}"]['title'] = $label;
+                    $this->_statFields[] = "{$tableName}_{$fieldName}_{$stat}";
+                    break;
+                }
+              }
+            }
+            else {
+              $select[] = "{$field['dbAlias']} as {$tableName}_{$fieldName}";
+              // $field['type'] is not always set. Use string type as default if not set.
+              $this->_columnHeaders["{$tableName}_{$fieldName}"]['type'] = isset($field['type']) ? $field['type'] : 2;
+              $this->_columnHeaders["{$tableName}_{$fieldName}"]['title'] = $field['title'];
+            }
+          }
+        }
+      }
+    }
+    $this->_selectClauses = $select;
+
+    $this->_select = " SELECT " . implode(', ', $select) . " ";
   }
 
   /**
@@ -323,21 +372,40 @@ class CRM_Report_Form_Contribute_TopDonor extends CRM_Report_Form {
     $this->_groupBy = CRM_Contact_BAO_Query::getGroupByFromSelectColumns($this->_selectClauses, array("{$this->_aliases['civicrm_contact']}.id", "{$this->_aliases['civicrm_contribution']}.currency"));
   }
 
-  /**
-   * Build output rows.
-   *
-   * @param string $sql
-   * @param array $rows
-   */
-  public function buildRows($sql, &$rows) {
+  public function postProcess() {
+
+    $this->beginPostProcess();
+
+    // get the acl clauses built before we assemble the query
+    $this->buildACLClause($this->_aliases['civicrm_contact']);
+
+    $this->buildQuery();
+
+    //set the variable value rank, rows = 0
     $setVariable = " SET @rows:=0, @rank=0 ";
     CRM_Core_DAO::singleValueQuery($setVariable);
-    $sql = "
-      SELECT * FROM ( {$this->_select} {$this->_from}  {$this->_where} {$this->_groupBy}
-        ORDER BY civicrm_contribution_total_amount_sum DESC
-      ) as abc {$this->_outerCluase} $this->_limit
-    ";
-    parent::buildRows($sql, $rows);
+
+    $sql = "SELECT * FROM ( {$this->_select} {$this->_from}  {$this->_where} {$this->_groupBy}
+                     ORDER BY civicrm_contribution_total_amount_sum DESC
+                 ) as abc {$this->_outerCluase} $this->_limit
+               ";
+
+    $dao = CRM_Core_DAO::executeQuery($sql);
+
+    while ($dao->fetch()) {
+      $row = array();
+      foreach ($this->_columnHeaders as $key => $value) {
+        if (property_exists($dao, $key)) {
+          $row[$key] = $dao->$key;
+        }
+      }
+      $rows[] = $row;
+    }
+    $this->formatDisplay($rows);
+
+    $this->doTemplateAssignment($rows);
+
+    $this->endPostProcess($rows);
   }
 
   /**
@@ -345,15 +413,17 @@ class CRM_Report_Form_Contribute_TopDonor extends CRM_Report_Form {
    */
   public function add2group($groupID) {
     if (is_numeric($groupID)) {
-      $this->_limit = $this->_groupLimit;
-      $rows = array();
-      $this->_columnHeaders['civicrm_contact_id'] = 1;
-      $this->buildRows('', $rows);
+
+      $sql = "
+{$this->_select} {$this->_from}  {$this->_where} {$this->_groupBy}
+ORDER BY civicrm_contribution_total_amount_sum DESC
+) as abc {$this->_groupLimit}";
+      $dao = CRM_Core_DAO::executeQuery($sql);
 
       $contact_ids = array();
       // Add resulting contacts to group
-      foreach ($rows as $row) {
-        $contact_ids[$row['civicrm_contact_id']] = $row['civicrm_contact_id'];
+      while ($dao->fetch()) {
+        $contact_ids[$dao->civicrm_contact_id] = $dao->civicrm_contact_id;
       }
 
       CRM_Contact_BAO_GroupContact::addContactsToGroup($contact_ids, $groupID);
@@ -372,7 +442,7 @@ class CRM_Report_Form_Contribute_TopDonor extends CRM_Report_Form {
     if ($this->_dashBoardRowCount) {
       $rowCount = $this->_dashBoardRowCount;
     }
-    if ($this->_outputMode == 'html') {
+    if ($this->_outputMode == 'html' || $this->_outputMode == 'group') {
       // Replace only first occurrence of SELECT.
       $this->_select = preg_replace('/SELECT/', 'SELECT SQL_CALC_FOUND_ROWS ', $this->_select, 1);
       $pageId = CRM_Utils_Request::retrieve('crmPID', 'Integer');

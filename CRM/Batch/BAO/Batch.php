@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -594,10 +594,8 @@ class CRM_Batch_BAO_Batch extends CRM_Batch_DAO_Batch {
    *   Associated array of batch ids.
    * @param string $exportFormat
    *   Export format.
-   * @param bool $downloadFile
-   *   Download export file?.
    */
-  public static function exportFinancialBatch($batchIds, $exportFormat, $downloadFile) {
+  public static function exportFinancialBatch($batchIds, $exportFormat) {
     if (empty($batchIds)) {
       CRM_Core_Error::fatal(ts('No batches were selected.'));
       return;
@@ -617,7 +615,6 @@ class CRM_Batch_BAO_Batch extends CRM_Batch_DAO_Batch {
       CRM_Core_Error::fatal("Could not locate exporter: $exporterClass");
     }
     $export = array();
-    $exporter->_isDownloadFile = $downloadFile;
     foreach ($batchIds as $batchId) {
       // export only batches whose status is set to Exported.
       $result = civicrm_api3('Batch', 'getcount', array(

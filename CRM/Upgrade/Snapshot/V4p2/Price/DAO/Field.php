@@ -3,7 +3,7 @@
 +--------------------------------------------------------------------+
 | CiviCRM version 4.7                                                |
 +--------------------------------------------------------------------+
-| Copyright CiviCRM LLC (c) 2004-2018                                |
+| Copyright CiviCRM LLC (c) 2004-2017                                |
 +--------------------------------------------------------------------+
 | This file is a part of CiviCRM.                                    |
 |                                                                    |
@@ -23,11 +23,11 @@
 | GNU Affero General Public License or the licensing of CiviCRM,     |
 | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
 +--------------------------------------------------------------------+
- */
+*/
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -74,7 +74,7 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
    * static value to see if we should log any modifications to
    * this table in the civicrm_log table
    *
-   * @var bool
+   * @var boolean
    */
   static $_log = TRUE;
   /**
@@ -109,7 +109,7 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
   /**
    * Enter a quantity for this field?
    *
-   * @var bool
+   * @var boolean
    */
   public $is_enter_qty;
   /**
@@ -331,7 +331,7 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
   /**
    * returns if this table needs to be logged.
    *
-   * @return bool
+   * @return boolean
    */
   public function getLog() {
     return self::$_log;
@@ -344,7 +344,7 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
    *
    * @return array
    */
-  public static function &import($prefix = FALSE) {
+  static function &import($prefix = FALSE) {
     if (!(self::$_import)) {
       self::$_import = array();
       $fields = self::fields();
@@ -369,7 +369,7 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
    *
    * @return array
    */
-  public static function &export($prefix = FALSE) {
+  static function &export($prefix = FALSE) {
     if (!(self::$_export)) {
       self::$_export = array();
       $fields = self::fields();
@@ -393,7 +393,7 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
    * @return array
    *   (reference)  the array of enum fields
    */
-  public static function &getEnums() {
+  static function &getEnums() {
     static $enums = array(
       'html_type',
     );
@@ -440,5 +440,4 @@ class CRM_Upgrade_Snapshot_V4p2_Price_DAO_Field extends CRM_Core_DAO {
       }
     }
   }
-
 }

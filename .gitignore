@@ -42,3 +42,7 @@ civicrm.settings.php
 sql/dummy_processor.mysql
 distmaker/distmaker.conf
 distmaker/out
+.idea/
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat

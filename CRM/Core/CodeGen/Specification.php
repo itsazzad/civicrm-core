@@ -16,25 +16,19 @@ class CRM_Core_CodeGen_Specification {
    * @param string $buildVersion
    *   Which version of the schema to build.
    */
-  public function parse($schemaPath, $buildVersion, $verbose = TRUE) {
+  public function parse($schemaPath, $buildVersion) {
     $this->buildVersion = $buildVersion;
 
-    if ($verbose) {
-      echo "Parsing schema description " . $schemaPath . "\n";
-    }
+    echo "Parsing schema description " . $schemaPath . "\n";
     $dbXML = CRM_Core_CodeGen_Util_Xml::parse($schemaPath);
 
-    if ($verbose) {
-      echo "Extracting database information\n";
-    }
+    echo "Extracting database information\n";
     $this->database = &$this->getDatabase($dbXML);
 
     $this->classNames = array();
 
     # TODO: peel DAO-specific stuff out of getTables, and spec reading into its own class
-    if ($verbose) {
-      echo "Extracting table information\n";
-    }
+    echo "Extracting table information\n";
     $this->tables = $this->getTables($dbXML, $this->database);
 
     $this->resolveForeignKeys($this->tables, $this->classNames);
@@ -237,6 +231,8 @@ class CRM_Core_CodeGen_Specification {
       $this->getPrimaryKey($tableXML->primaryKey, $fields, $table);
     }
 
+    // some kind of refresh?
+    CRM_Core_Config::singleton(FALSE);
     if ($this->value('index', $tableXML)) {
       $index = array();
       foreach ($tableXML->index as $indexXML) {

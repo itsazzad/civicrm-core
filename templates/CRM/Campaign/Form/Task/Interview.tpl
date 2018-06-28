@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -42,7 +42,7 @@
 
     <div id='responseErrors' class = "hiddenElement messages crm-error"></div>
 
-    <div class='help'>
+    <div id='help'>
       {if $votingTab}
         {ts}Click <strong>record response</strong> button to update values for each respondent as needed.{/ts}
       {else}
@@ -59,7 +59,6 @@
           <th></th>
           <th>{ts}Column{/ts}</th>
           <th>{ts}Order{/ts}</th>
-          <th></th>
         </tr>
 
         {section name=rowLoop start=1 loop=5}

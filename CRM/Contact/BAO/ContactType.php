@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 class CRM_Contact_BAO_ContactType extends CRM_Contact_DAO_ContactType {
 
@@ -654,11 +654,12 @@ WHERE name = %1";
     }
 
     if (!empty($params['id'])) {
+      $params = array('name' => "New $contactName");
       $newParams = array(
         'label' => "New $contact",
         'is_active' => $active,
       );
-      CRM_Core_BAO_Navigation::processUpdate(['name' => "New $contactName"], $newParams);
+      CRM_Core_BAO_Navigation::processUpdate($params, $newParams);
     }
     else {
       $name = self::getBasicType($contactName);

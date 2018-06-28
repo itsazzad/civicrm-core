@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  */
 
 /**
@@ -182,6 +182,7 @@ class CRM_Financial_BAO_ExportFormat_CSV extends CRM_Financial_BAO_ExportFormat 
       $financialItems = array();
       $this->_batchIds = $batchId;
 
+      $batchItems = array();
       $queryResults = array();
 
       while ($dao->fetch()) {
@@ -224,10 +225,11 @@ class CRM_Financial_BAO_ExportFormat_CSV extends CRM_Financial_BAO_ExportFormat 
         );
 
         end($financialItems);
+        $batchItems[] = &$financialItems[key($financialItems)];
         $queryResults[] = get_object_vars($dao);
       }
 
-      CRM_Utils_Hook::batchItems($queryResults, $financialItems);
+      CRM_Utils_Hook::batchItems($queryResults, $batchItems);
 
       $financialItems['headers'] = self::formatHeaders($financialItems);
       self::export($financialItems);

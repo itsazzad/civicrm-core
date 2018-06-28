@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -286,10 +286,6 @@ class CRM_Export_BAO_Export {
    * @param array $exportParams
    * @param string $queryOperator
    *
-   * @return array|null
-   *   An array can be requested from within a unit test.
-   *
-   * @throws \CRM_Core_Exception
    */
   public static function exportComponents(
     $selectAll,
@@ -389,6 +385,7 @@ class CRM_Export_BAO_Export {
           }
         }
 
+        $contactType = CRM_Utils_Array::value(0, $value);
         $locTypeId = CRM_Utils_Array::value(2, $value);
 
         if ($relationField) {
@@ -612,12 +609,10 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
         }
         elseif ($exportMode == CRM_Export_Form_Select::ACTIVITY_EXPORT) {
           $sourceID = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_ActivityContact', 'record_type_id', 'Activity Source');
-          $dao = CRM_Core_DAO::executeQuery("
-            SELECT contact_id FROM civicrm_activity_contact
-            WHERE activity_id IN ( " . implode(',', $ids) . ") AND
-            record_type_id = {$sourceID}
-          ");
-
+          $query = "SELECT contact_id FROM civicrm_activity_contact
+                              WHERE activity_id IN ( " . implode(',', $ids) . ") AND
+                              record_type_id = {$sourceID}";
+          $dao = CRM_Core_DAO::executeQuery($query);
           while ($dao->fetch()) {
             $relIDs[] = $dao->contact_id;
           }
@@ -1080,14 +1075,6 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
     if ($exportTempTable) {
       self::writeDetailsToTable($exportTempTable, $componentDetails, $sqlColumns);
 
-      // if postalMailing option is checked, exclude contacts who are deceased, have
-      // "Do not mail" privacy setting, or have no street address
-      if (isset($exportParams['postal_mailing_export']['postal_mailing_export']) &&
-        $exportParams['postal_mailing_export']['postal_mailing_export'] == 1
-      ) {
-        self::postalMailingFormat($exportTempTable, $headerRows, $sqlColumns, $exportMode);
-      }
-
       // do merge same address and merge same household processing
       if ($mergeSameAddress) {
         self::mergeSameAddress($exportTempTable, $headerRows, $sqlColumns, $exportParams);
@@ -1097,6 +1084,14 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
       if ($mergeSameHousehold) {
         self::mergeSameHousehold($exportTempTable, $headerRows, $sqlColumns, $relationKeyMOH);
         self::mergeSameHousehold($exportTempTable, $headerRows, $sqlColumns, $relationKeyHOH);
+      }
+
+      // if postalMailing option is checked, exclude contacts who are deceased, have
+      // "Do not mail" privacy setting, or have no street address
+      if (isset($exportParams['postal_mailing_export']['postal_mailing_export']) &&
+        $exportParams['postal_mailing_export']['postal_mailing_export'] == 1
+      ) {
+        self::postalMailingFormat($exportTempTable, $headerRows, $sqlColumns, $exportMode);
       }
 
       // call export hook
@@ -1119,7 +1114,7 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
       CRM_Utils_System::civiExit();
     }
     else {
-      throw new CRM_Core_Exception(ts('No records to export'));
+      CRM_Core_Error::fatal(ts('No records to export'));
     }
   }
 

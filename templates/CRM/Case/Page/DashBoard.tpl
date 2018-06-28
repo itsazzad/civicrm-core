@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -40,17 +40,18 @@
 
     <div class="crm-case-dashboard-switch-view-buttons">
         {if $myCases}
-          {* check for access all cases and activities *}
-          {if call_user_func(array('CRM_Core_Permission','check'), 'access all cases and activities')}
-            <div><input name="allupcoming" type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=1"}")' value="1"><span>{ts}All Cases with Upcoming Activities{/ts}</span></input></div>
-            <div><input name="allupcoming" checked type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=0"}")' value="0"><span>{ts}My Cases with Upcoming Activities{/ts}</span></input></div>
-          {/if}
+            {* check for access all cases and activities *}
+            {if call_user_func(array('CRM_Core_Permission','check'), 'access all cases and activities')}
+                <div><input name="allupcoming" type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=1"}")' value="1"><span>{ts}All Cases with Upcoming Activities{/ts}</span></input></div>
+                <div><input name="allupcoming" checked type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=0"}")' value="0"><span>{ts}My Cases with Upcoming Activities{/ts}</span></input></div>
+            {/if}
         {else}
-          <div><input name="allupcoming" checked type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=1"}")' value="1"><span>{ts}All Cases with Upcoming Activities{/ts}</span></input></div>
-          <div><input name="allupcoming" type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=0"}")' value="0"><span>{ts}My Cases with Upcoming Activities{/ts}</span></input></div>
+                <div><input name="allupcoming" checked type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=1"}")' value="1"><span>{ts}All Cases with Upcoming Activities{/ts}</span></input></div>
+                <div><input name="allupcoming" type="radio" class="radio" onClick='window.location.replace("{crmURL p="civicrm/case" q="reset=1&all=0"}")' value="0"><span>{ts}My Cases with Upcoming Activities{/ts}</span></input></div>
         {/if}
     </div>
 </div>
+
 
 <h3>
 {if $myCases}
@@ -87,9 +88,8 @@
 <div class="spacer"></div>
     <h3>{if $myCases}{ts}My Cases With Upcoming Activities{/ts}{else}{ts}All Cases With Upcoming Activities{/ts}{/if}</h3>
     {if $upcomingCases}
-    {include file="CRM/Case/Form/CaseFilter.tpl" context="$context" list="upcoming"}
     <div class="form-item">
-        {include file="CRM/Case/Page/DashboardSelector.tpl" context="dashboard" list="upcoming" all="$all"}
+        {include file="CRM/Case/Page/DashboardSelector.tpl" context="dashboard" list="upcoming" rows=$upcomingCases}
     </div>
     {else}
         <div class="messages status no-popup">
@@ -100,15 +100,13 @@
 <div class="spacer"></div>
     <h3>{if $myCases}{ts}My Cases With Recently Performed Activities{/ts}{else}{ts}All Cases With Recently Performed Activities{/ts}{/if}</h3>
     {if $recentCases}
-    {include file="CRM/Case/Form/CaseFilter.tpl" context="$context" list="recent"}
     <div class="form-item">
-        {include file="CRM/Case/Page/DashboardSelector.tpl" context="dashboard" list="recent" all="$all"}
+        {include file="CRM/Case/Page/DashboardSelector.tpl" context="dashboard" list="recent" rows=$recentCases}
     </div>
     {else}
         <div class="messages status no-popup">
       {ts 1=$findCasesURL}There are no cases with activities scheduled in the past two weeks. Use %1 to expand your search.{/ts}
         </div>
     {/if}
-</div>
 {/if}
 </div>

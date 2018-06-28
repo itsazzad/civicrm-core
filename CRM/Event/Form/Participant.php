@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -29,7 +29,7 @@
  *
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2017
  * $Id$
  *
  */
@@ -986,7 +986,7 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
     }
     if ($this->_isPaidEvent) {
 
-      $contributionParams = array('skipCleanMoney' => TRUE);
+      $contributionParams = array();
       $lineItem = array();
       $additionalParticipantDetails = array();
       if (CRM_Contribute_BAO_Contribution::checkContributeSettings('deferred_revenue_enabled')) {
@@ -1308,8 +1308,9 @@ class CRM_Event_Form_Participant extends CRM_Contribute_Form_AbstractEditPayment
         'participant_id' => $participants[0]->id,
         'contribution_id' => $contribution->id,
       );
+      $ids = array();
 
-      CRM_Event_BAO_ParticipantPayment::create($paymentParticipant);
+      CRM_Event_BAO_ParticipantPayment::create($paymentParticipant, $ids);
       $this->_contactIds[] = $this->_contactId;
     }
     else {

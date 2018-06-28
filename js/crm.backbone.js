@@ -1,4 +1,4 @@
-(function($, _, Backbone) {
+(function($, _) {
   if (!CRM.Backbone) CRM.Backbone = {};
 
   /**
@@ -569,4 +569,4 @@
       model.trigger('error', model, resp, options);
     };
   };
-})(CRM.$, CRM._, CRM.BB);
+})(CRM.$, CRM._);

@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -139,7 +139,7 @@
     {if $contributionMode && $processorSupportsFutureStartDate}
     <tr id='start_date' class="crm-contribution-form-block-receive_date">
       <td class="label">{ts}Start Date{/ts}</td>
-      <td {$valueStyle}>{if $hideCalender neq true}{$form.receive_date.html}{/if}<br />
+      <td {$valueStyle}>{if $hideCalender neq true}{include file="CRM/common/jcalendar.tpl" elementName=receive_date}{else}{$receive_date|crmDate}{/if}<br />
         <span class="description">{ts}You can set a start date for recurring contributions and the first payment will be on that date. For a single post-dated contribution you must select recurring and choose one installment{/ts}</span>
       </td>
     </tr>
@@ -161,7 +161,7 @@
         {if $contribution_status_id eq 2}{if $is_pay_later }: {ts}Pay Later{/ts} {else}: {ts}Incomplete Transaction{/ts}{/if}{/if}
         </td>
         <td>
-        {if !$isUsePaymentBlock && $contactId && $contribID && $contributionMode EQ null && $contribution_status_id eq 2}
+        {if $contactId && $contribID && $contributionMode EQ null && $contribution_status_id eq 2}
           {capture assign=payNowLink}{crmURL p='civicrm/contact/view/contribution' q="reset=1&action=update&id=`$contribID`&cid=`$contactId`&context=`$context`&mode=live"}{/capture}
           <a class="open-inline action-item crm-hover-button" href="{$payNowLink}">&raquo; {ts}Pay with Credit Card{/ts}</a>
         {/if}
@@ -179,7 +179,7 @@
               <td class="label">{$form.cancel_date.label}</td>
               <td>
                 {if $hideCalendar neq true}
-                  {$form.cancel_date.html}
+                  {include file="CRM/common/jcalendar.tpl" elementName=cancel_date}
                 {else}
                   {$form.cancel_date.value|crmDate}
                 {/if}
@@ -203,7 +203,7 @@
       </tr>
       <tr class="crm-contribution-form-block-receive_date">
         <td class="label">{$form.receive_date.label}</td>
-        <td>{$form.receive_date.html}<br />
+        <td {$valueStyle}>{include file="CRM/common/jcalendar.tpl" elementName=receive_date}<br />
           <span class="description">{ts}The date this contribution was received.{/ts}</span>
         </td>
       </tr>
@@ -231,11 +231,11 @@
     {/if}
     <tr id="fromEmail" class="crm-contribution-form-block-receipt_date" style="display:none;">
       <td class="label">{$form.from_email_address.label}</td>
-      <td>{$form.from_email_address.html} {help id="id-from_email" file="CRM/Contact/Form/Task/Email.hlp" isAdmin=$isAdmin}</td>
+      <td>{$form.from_email_address.html}</td>
     </tr>
     <tr id="receiptDate" class="crm-contribution-form-block-receipt_date">
       <td class="label">{$form.receipt_date.label}</td>
-      <td>{$form.receipt_date.html}<br />
+      <td>{include file="CRM/common/jcalendar.tpl" elementName=receipt_date}<br />
         <span class="description">{ts}Date that a receipt was sent to the contributor.{/ts}</span>
       </td>
     </tr>
@@ -249,9 +249,6 @@
       <legend>
         {ts}Payment Details{/ts}
       </legend>
-      {if $isUsePaymentBlock}
-        {include file="CRM/Contribute/Form/PaymentInfoBlock.tpl"}
-      {else}
         <table class="form-layout-compressed" >
           <tr class="crm-contribution-form-block-payment_instrument_id">
             <td class="label">{$form.payment_instrument_id.label}</td>
@@ -263,13 +260,10 @@
             <td {$valueStyle}>{$form.trxn_id.html} {help id="id-trans_id"}</td>
           </tr>
         </table>
-      {/if}
       </fieldset>
   {/if}
 
-  {if !$isUsePaymentBlock}
-    {include file='CRM/Core/BillingBlockWrapper.tpl'}
-  {/if}
+  {include file='CRM/Core/BillingBlockWrapper.tpl'}
 
     <!-- start of soft credit -->
     {if !$payNow}
